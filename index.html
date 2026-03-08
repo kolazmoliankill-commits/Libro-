@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    <title>Para Leslie con Amor ❤️</title>
+    <style>
+        :root { --p-color: #ff006e; --s-color: #ffd700; }
+        body, html { margin: 0; height: 100%; background: #000; overflow: hidden; font-family: 'Georgia', serif; }
+        
+        /* FONDO DINÁMICO (ESTRELLAS Y FLORES) */
+        #bg-canvas { position: fixed; inset: 0; z-index: -1; }
+
+        /* ESCÁNER */
+        #scanner-page {
+            position: fixed; inset: 0; background: #000; z-index: 5000;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: 1s ease-in-out;
+        }
+        .scan-target {
+            width: 120px; height: 120px; border: 3px solid var(--p-color); border-radius: 30px;
+            display: flex; align-items: center; justify-content: center; font-size: 50px;
+            position: relative; cursor: pointer; box-shadow: 0 0 30px var(--p-color);
+        }
+        .laser {
+            position: absolute; width: 100%; height: 4px; background: var(--p-color);
+            top: 0; box-shadow: 0 0 15px var(--p-color); opacity: 0;
+        }
+
+        /* CONTENEDOR DEL LIBRO */
+        #main-stage { 
+            display: none; width: 100%; height: 100%; 
+            align-items: center; justify-content: center; 
+            perspective: 2000px; 
+        }
+        .book { width: 300px; height: 450px; position: relative; transform-style: preserve-3d; }
+        
+        .page {
+            position: absolute; width: 100%; height: 100%; top: 0; left: 0;
+            background: #fff; border-radius: 5px 15px 15px 5px;
+            transform-origin: left; transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 30px; box-sizing: border-box; color: #222; text-align: center;
+            box-shadow: 5px 5px 20px rgba(0,0,0,0.5); display: flex; flex-direction: column;
+        }
+        .page.flipped { transform: rotateY(-180deg); z-index: 0 !important; }
+        .page h2 { color: var(--p-color); font-size: 1.4rem; border-bottom: 2px solid var(--s-color); padding-bottom: 10px; }
+        .page p { font-size: 1.1rem; line-height: 1.6; font-style: italic; margin-top: 20px; }
+
+        /* MENSAJE FINAL SORPRESA */
+        #final-msg {
+            position: fixed; top: 50%; width: 100%; text-align: center;
+            color: #fff; font-size: 3rem; font-weight: bold;
+            text-shadow: 0 0 20px var(--p-color); display: none;
+            z-index: 4000; pointer-events: none; animation: beat 1s infinite;
+        }
+        @keyframes beat { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+
+        /* BOTONES */
+        .nav { position: fixed; bottom: 40px; display: flex; gap: 20px; z-index: 100; }
+        .btn {
+            background: rgba(255, 0, 110, 0.2); border: 2px solid var(--p-color);
+            color: #fff; padding: 12px 25px; border-radius: 30px; cursor: pointer;
+            backdrop-filter: blur(5px); font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+
+<div id="scanner-page">
+    <h2 style="color:white; margin-bottom:30px;">SOLO PARA LESLIE ❤️</h2>
+    <div class="scan-target" id="scanBtn">
+        ☝️
+        <div class="laser" id="laserLine"></div>
+    </div>
+    <p id="st" style="color:#888; margin-top:20px;">Mantén presionado para escanear</p>
+</div>
+
+<div id="final-msg">¡TE AMO, LESLIE! ❤️</div>
+
+<div id="main-stage">
+    <div class="book">
+        <div class="page" style="z-index: 1;">
+            <h2>Nuestra Historia</h2>
+            <p>"Gracias por ser mi persona favorita en todo el universo. Esto apenas comienza."</p>
+            <div style="font-size: 40px; margin-top: auto;">💍✨</div>
+        </div>
+        <div class="page" style="z-index: 2;">
+            <h2>Mi Mundo</h2>
+            <p>"Tu risa es la melodía que alegra mis días. Eres una mujer increíblemente valiosa."</p>
+            <div style="font-size: 40px; margin-top: auto;">🌌👑</div>
+        </div>
+        <div class="page" style="z-index: 3;">
+            <h2>Un Detalle</h2>
+            <p>"Sé cuánto amas a los gatitos, así que aquí tienes un amiguito cuidándonos."</p>
+            <div style="font-size: 50px; margin-top: auto;">🐱🐾</div>
+        </div>
+        <div class="page" style="z-index: 4;">
+            <h2>Para Ti</h2>
+            <p>"Hoy celebro tu fuerza y tu dulzura. Te admiro más de lo que las palabras pueden decir."</p>
+            <div style="font-size: 40px; margin-top: auto;">🌹🌸</div>
+        </div>
+        <div class="page" style="z-index: 5;">
+            <div style="border: 3px double var(--s-color); height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                <h1 style="color: var(--p-color); font-size: 1.6rem; margin: 0;">¡Feliz Día de la Mujer!</h1>
+                <p style="color: #666; font-size: 0.9rem;">LESLIE</p>
+                <div style="font-size: 3.5rem; margin: 20px 0;">💐</div>
+                <p style="font-size: 0.8rem; color: #999;">Toca "Siguiente" para leer</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="nav">
+        <button class="btn" onclick="prev()">Anterior</button>
+        <button class="btn" onclick="next()">Siguiente</button>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.148.0/build/three.min.js"></script>
+<script>
+    // --- FONDO CON ESTRELLAS Y FLORES CAYENDO ---
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('bg-canvas'), antialias: true, alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+
+    // Estrellas fijas
+    const starGeo = new THREE.BufferGeometry();
+    const starPos = new Float32Array(2000 * 3);
+    for(let i=0; i<6000; i++) starPos[i] = (Math.random()-0.5) * 800;
+    starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+    scene.add(new THREE.Points(starGeo, new THREE.PointsMaterial({color: 0xffffff, size: 0.8})));
+
+    // Flores (pétalos) cayendo
+    const flowerGeo = new THREE.BufferGeometry();
+    const flowerCount = 100;
+    const flowerPos = new Float32Array(flowerCount * 3);
+    for(let i=0; i<flowerCount*3; i++) flowerPos[i] = (Math.random()-0.5) * 600;
+    flowerGeo.setAttribute('position', new THREE.BufferAttribute(flowerPos, 3));
+    const flowerPoints = new THREE.Points(flowerGeo, new THREE.PointsMaterial({color: 0xff006e, size: 4}));
+    scene.add(flowerPoints);
+
+    camera.position.z = 400;
+
+    function animate() {
+        requestAnimationFrame(animate);
+        const positions = flowerGeo.attributes.position.array;
+        for(let i=1; i<positions.length; i+=3) {
+            positions[i] -= 1; // Velocidad de caída
+            if(positions[i] < -300) positions[i] = 300;
+        }
+        flowerGeo.attributes.position.needsUpdate = true;
+        renderer.render(scene, camera);
+    }
+    animate();
+
+    // --- ESCÁNER ---
+    const scanBtn = document.getElementById('scanBtn');
+    const laser = document.getElementById('laserLine');
+    let stimer;
+
+    scanBtn.addEventListener('pointerdown', () => {
+        laser.style.opacity = '1';
+        laser.style.animation = 'lineMove 2s infinite alternate';
+        document.getElementById('st').innerText = "ESCANEEANDO...";
+        stimer = setTimeout(() => {
+            document.getElementById('scanner-page').style.transform = 'translateY(-100%)';
+            setTimeout(() => {
+                document.getElementById('scanner-page').style.display = 'none';
+                document.getElementById('main-stage').style.display = 'flex';
+            }, 800);
+        }, 2200);
+    });
+    scanBtn.addEventListener('pointerup', () => {
+        clearTimeout(stimer);
+        laser.style.opacity = '0';
+        document.getElementById('st').innerText = "Mantén presionado para escanear";
+    });
+
+    // --- CONTROL DEL LIBRO ---
+    const pages = document.querySelectorAll('.page');
+    let idx = pages.length - 1;
+
+    function next() {
+        if(idx >= 0) {
+            pages[idx].classList.add('flipped');
+            idx--;
+            if(idx < 0) document.getElementById('final-msg').style.display = 'block';
+        }
+    }
+
+    function prev() {
+        if(idx < pages.length - 1) {
+            document.getElementById('final-msg').style.display = 'none';
+            idx++;
+            pages[idx].classList.remove('flipped');
+        }
+    }
+</script>
+
+<style>
+    @keyframes lineMove { from { top: 0%; } to { top: 100%; } }
+</style>
+
+</body>
+</html>
